@@ -64,7 +64,7 @@ function update() {
     player.body.velocity.x = 0;
 
     time++;
-    if (time % 40 == 0) {
+    if (time % 100 == 0) {
         newDiamond();
     }
 
