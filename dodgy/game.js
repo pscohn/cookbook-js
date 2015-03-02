@@ -1,19 +1,21 @@
 var game = new Phaser.Game(320, 480, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 var player;
+var playerAlive = true;
 var score = 0;
 var scoreText;
-var gravityNormal = true;
 var jumpButton;
 var diamonds;
+var currentDiamonds = [];
 var time = 0;
 
 function playerDie(player, diamond) {
     player.kill();
+    playerAlive = false;
     // switch screen state for game over
 }
 
-function diamondPass() {
+function addScore() {
     score += 1;
     scoreText.text = 'score: ' + score
 }
@@ -25,19 +27,8 @@ function newDiamond() {
     diamond.scale.set(2, 2);
     diamond.body.gravity.y = 300;
     diamond.body.bounce.y = 0.7 + Math.random() * 0.2;
+    currentDiamonds.push(diamond);
 }
-
-flipGravity = function() {
-    var v = 500;
-    player.body.gravity.y = -player.body.gravity.y;
-    if (player.body.gravity.y > 0) {
-        gravityNormal = true;
-        player.body.velocity.y = -v;
-    } else {
-        gravityNormal = false;
-        player.body.velocity.y = v;
-    }
-};
 
 function preload() {
     game.load.image('sky', 'assets/sky.png');
@@ -57,7 +48,6 @@ function create() {
 
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    jumpButton.onDown.add(flipGravity, this);
     scoreText = game.add.text(16, 16, 'score: 0', {fontSize: '32px', fill: '#000'});
 
     diamonds = game.add.group();
@@ -83,6 +73,14 @@ function update() {
         newDiamond();
     }
 
+    for (var i=0; i<currentDiamonds.length; i++) {
+        if (playerAlive && currentDiamonds[i].y > game.world.height) {
+            addScore();
+            currentDiamonds[i].kill()
+            currentDiamonds.splice(i, 1);
+        }
+    }
+
     if (cursors.left.isDown) {
         player.body.velocity.x = -300;
         player.animations.play('left');
@@ -95,10 +93,6 @@ function update() {
     }
 
     if (cursors.up.isDown) {// && player.body.touching.down) {
-        if (gravityNormal) {
-            player.body.velocity.y = -450;
-        } else {
-            player.body.velocity.y = 450;
-        }
+        player.body.velocity.y = -450;
     }
 }
