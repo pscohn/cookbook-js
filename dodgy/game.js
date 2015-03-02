@@ -36,14 +36,6 @@ function create() {
     ledge = platforms.create(-150, 250, 'ground');
     ledge.body.immovable = true;
 
-    player = game.add.sprite(32, game.world.height - 150, 'dude');
-    game.physics.arcade.enable(player);
-    player.body.bounce.y = 0;
-    player.body.gravity.y = 1400;
-    player.body.collideWorldBounds = true;
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('right', [5,6,7,8], 10, true);
-
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     jumpButton.onDown.add(flipGravity, this);
@@ -51,6 +43,11 @@ function create() {
 
     diamonds = game.add.group();
     diamonds.enableBody = true;
+    for (var i=0; i<12; i++) {
+        var diamond = diamonds.create(i * 70 + 25, 0, 'diamond');
+        diamond.body.gravity.y = 300;
+        diamond.body.bounce.y = 0.7 + Math.random() * 0.2;
+    }
 
     stars = game.add.group();
     stars.enableBody = true;
@@ -59,6 +56,14 @@ function create() {
         star.body.gravity.y = 300;
         star.body.bounce.y = 0.7 + Math.random() * 0.2;
     }
+
+    player = game.add.sprite(32, game.world.height - 150, 'dude');
+    game.physics.arcade.enable(player);
+    player.body.bounce.y = 0;
+    player.body.gravity.y = 1400;
+    player.body.collideWorldBounds = true;
+    player.animations.add('left', [0, 1, 2, 3], 10, true);
+    player.animations.add('right', [5,6,7,8], 10, true);
 }
 
 flipGravity = function() {
@@ -75,6 +80,7 @@ flipGravity = function() {
 function update() {
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.collide(stars, platforms);
+    game.physics.arcade.collide(diamonds, platforms);
     game.physics.arcade.overlap(player, stars, collectStar, null, this);
     player.body.velocity.x = 0;
     if (cursors.left.isDown) {
