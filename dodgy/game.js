@@ -58,7 +58,7 @@ function create() {
 
     diamonds = game.add.group();
     diamonds.enableBody = true;
-    newDiamond(300, 0);
+    newDiamond(Math.random() * 800, 0);
 
     player = game.add.sprite(32, game.world.height - 150, 'dude');
     game.physics.arcade.enable(player);
@@ -71,13 +71,12 @@ function create() {
 
 function update() {
     game.physics.arcade.collide(player, platforms);
-    game.physics.arcade.collide(diamonds, platforms);
     game.physics.arcade.overlap(player, diamonds, playerDie, null, this);
     player.body.velocity.x = 0;
 
     time++;
-    if (time % 113 == 0) {
-        newDiamond(300, 0);
+    if (time % 200 == 0) {
+        newDiamond(Math.random() * 800, 0);
     }    
 
     if (cursors.left.isDown) {
