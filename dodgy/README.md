@@ -4,3 +4,4 @@
 - game over screen
 - random baddie interval
 - high score
+- make fun
