@@ -40,8 +40,8 @@ function create() {
 
     diamonds = game.add.group();
     diamonds.enableBody = true;
-    for (var i=0; i<12; i++) {
-        var diamond = diamonds.create(i * 70 + 25, 0, 'diamond');
+    for (var i=0; i<6; i++) {
+        var diamond = diamonds.create(i * 140 + 25, 0, 'diamond');
         diamond.body.gravity.y = 300;
         diamond.body.bounce.y = 0.7 + Math.random() * 0.2;
     }
