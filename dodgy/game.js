@@ -13,7 +13,13 @@ function playerDie(player, diamond) {
     // switch screen state for game over
 }
 
+function diamondPass() {
+    score += 1;
+    scoreText.text = 'score: ' + score
+}
+
 function newDiamond(x) {
+    // potential issue - diamonds never killed
     var diamond = diamonds.create(x, -50, 'diamond');
     diamond.scale.set(2, 2);
     diamond.body.gravity.y = 300;
