@@ -15,6 +15,7 @@ function playerDie(player, diamond) {
 
 function newDiamond(x, y) {
     var diamond = diamonds.create(x, y, 'diamond');
+    diamond.scale.set(2, 2);
     diamond.body.gravity.y = 300;
     diamond.body.bounce.y = 0.7 + Math.random() * 0.2;
 }
