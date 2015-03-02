@@ -1,4 +1,4 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(320, 480, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 var player;
 var score = 0;
@@ -13,8 +13,8 @@ function playerDie(player, diamond) {
     // switch screen state for game over
 }
 
-function newDiamond(x, y) {
-    var diamond = diamonds.create(x, y, 'diamond');
+function newDiamond(x) {
+    var diamond = diamonds.create(x, -50, 'diamond');
     diamond.scale.set(2, 2);
     diamond.body.gravity.y = 300;
     diamond.body.bounce.y = 0.7 + Math.random() * 0.2;
@@ -55,7 +55,7 @@ function create() {
 
     diamonds = game.add.group();
     diamonds.enableBody = true;
-    newDiamond(Math.random() * 800, 0);
+    newDiamond(Math.random() * game.world.width);
 
     player = game.add.sprite(32, game.world.height - 150, 'dude');
     game.physics.arcade.enable(player);
@@ -72,9 +72,9 @@ function update() {
     player.body.velocity.x = 0;
 
     time++;
-    if (time % 200 == 0) {
-        newDiamond(Math.random() * 800, 0);
-    }    
+    if (time % 100 == 0) {
+        newDiamond(Math.random() * game.world.width);
+    }
 
     if (cursors.left.isDown) {
         player.body.velocity.x = -300;
