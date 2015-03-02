@@ -1,5 +1,9 @@
-var game = new Phaser.Game(480, 320, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+//var game = new Phaser.Game(480, 320, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
+Game = {};
+
+var w = 480;
+var h = 320;
 var player;
 var playerAlive = true;
 var score = 0;
@@ -9,16 +13,7 @@ var diamonds;
 var currentDiamonds = [];
 var time = 0;
 
-function playerDie(player, diamond) {
-    player.kill();
-    playerAlive = false;
-    // switch screen state for game over
-}
 
-function addScore() {
-    score += 1;
-    scoreText.text = 'score: ' + score
-}
 
 function newDiamond() {
     for (var i=0; i < 2; i++) {
@@ -31,63 +26,128 @@ function newDiamond() {
     }
 }
 
-function preload() {
-    game.load.image('sky', 'assets/sky.png');
-    game.load.image('ground', 'assets/platform.png');
-    game.load.image('diamond', 'assets/diamond.png');
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-}
-
-function create() {
-    game.physics.startSystem(Phaser.Physics.ARCADE);
-    game.add.sprite(0, 0, 'sky');
-
-    cursors = game.input.keyboard.createCursorKeys();
-    jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    scoreText = game.add.text(16, 16, 'score: 0', {fontSize: '32px', fill: '#000'});
-
-    diamonds = game.add.group();
-    diamonds.enableBody = true;
-    newDiamond();
-
-    player = game.add.sprite(32, game.world.height - 150, 'dude');
-    game.physics.arcade.enable(player);
-    player.body.bounce.y = 0;
-    player.body.gravity.y = 1400;
-    player.body.collideWorldBounds = true;
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('right', [5,6,7,8], 10, true);
-}
-
-function update() {
-    game.physics.arcade.overlap(player, diamonds, playerDie, null, this);
-    player.body.velocity.x = 0;
-
-    time++;
-    if (time % 100 == 0) {
-        newDiamond();
-    }
-
-    for (var i=0; i<currentDiamonds.length; i++) {
-        if (playerAlive && currentDiamonds[i].y > game.world.height) {
-            addScore();
-            currentDiamonds[i].kill()
-            currentDiamonds.splice(i, 1);
+Game.Start = function(game) { };
+Game.Start.prototype = {
+    preload: function() {
+        game.load.image('sky', 'assets/sky.png');
+        game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+    },
+    create: function() {
+        game.add.sprite(0, 0, 'sky');
+        var startText = 'press up to begin';
+        // text is not centered
+        var startLabel = this.game.add.text(w / 4, h / 4, startText, {fontSize: '32px', fill: '#000'});
+        var playerStart = game.add.sprite(w / 2, h / 2, 'dude');
+        this.cursor = this.game.input.keyboard.createCursorKeys();
+    },
+    update: function() {
+        if (this.cursor.up.isDown) {
+            this.game.state.start('Play');
         }
     }
+};
 
-    if (cursors.left.isDown) {
-        player.body.velocity.x = -300;
-        player.animations.play('left');
-    } else if (cursors.right.isDown) {
-        player.body.velocity.x = 300;
-        player.animations.play('right');
-    } else {
-        player.animations.stop();
-        player.frame = 5;
-    }
+Game.Play = function(game) { };
+Game.Play.prototype = {
 
-    if (cursors.up.isDown) {// && player.body.touching.down) {
-        player.body.velocity.y = -450;
+    playerDie: function(player, diamond) {
+        player.kill();
+        playerAlive = false;
+        this.game.state.start('Over');
+    },
+    addScore: function() {
+        console.log('here');
+        score += 1;
+        scoreText.text = 'score: ' + score
+    },
+
+    preload: function() {
+        game.load.image('sky', 'assets/sky.png');
+        game.load.image('diamond', 'assets/diamond.png');
+        game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+    },
+
+    create: function() {
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.add.sprite(0, 0, 'sky');
+
+        cursors = game.input.keyboard.createCursorKeys();
+        jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        scoreText = game.add.text(16, 16, 'score: 0', {fontSize: '32px', fill: '#000'});
+
+        diamonds = game.add.group();
+        diamonds.enableBody = true;
+        newDiamond();
+
+        player = game.add.sprite(w / 2, h / 2, 'dude');
+        game.physics.arcade.enable(player);
+        player.body.bounce.y = 0;
+        player.body.gravity.y = 1400;
+        player.body.collideWorldBounds = true;
+        player.animations.add('left', [0, 1, 2, 3], 10, true);
+        player.animations.add('right', [5,6,7,8], 10, true);
+    },
+
+    update: function() {
+        game.physics.arcade.overlap(player, diamonds, this.playerDie, null, this);
+        player.body.velocity.x = 0;
+
+        time++;
+        if (time % 100 == 0) {
+            newDiamond();
+        }
+
+        for (var i=0; i<currentDiamonds.length; i++) {
+            if (playerAlive && currentDiamonds[i].y > game.world.height) {
+                this.addScore();
+                currentDiamonds[i].kill()
+                currentDiamonds.splice(i, 1);
+            }
+        }
+
+        if (cursors.left.isDown) {
+            player.body.velocity.x = -300;
+            player.animations.play('left');
+        } else if (cursors.right.isDown) {
+            player.body.velocity.x = 300;
+            player.animations.play('right');
+        } else {
+            player.animations.stop();
+            player.frame = 5;
+        }
+
+        if (cursors.up.isDown) {// && player.body.touching.down) {
+            player.body.velocity.y = -450;
+        }
     }
-}
+};
+
+Game.Over = function(game) { };
+Game.Over.prototype = {
+    preload: function() {
+        game.load.image('sky', 'assets/sky.png');
+    },
+    create: function() {
+        game.add.sprite(0, 0, 'sky');
+        this.cursor = this.game.input.keyboard.createCursorKeys();
+        var startText = 'press up to begin';
+        // text is not centered
+        var startLabel = this.game.add.text(w / 4, h / 4, startText, {fontSize: '32px', fill: '#000'});
+        var gameOverText = 'game over';
+        // text is not centered
+        var gameOverLabel = this.game.add.text(w / 4, h / 6, gameOverText, {fontSize: '32px', fill: '#000'});
+        // text is not centered
+        var gameOverScoreLabel = this.game.add.text(w / 4, h - 60, scoreText.text, {fontSize: '32px', fill: '#000'});
+    },
+    update: function() {
+        if (this.cursor.up.isDown) {
+            this.game.state.start('Play');
+        }
+    }
+};
+
+var game = new Phaser.Game(w, h, Phaser.AUTO, 'gameContainer');
+game.state.add('Start', Game.Start);
+game.state.add('Play', Game.Play);
+game.state.add('Over', Game.Over);
+game.state.start('Start');
