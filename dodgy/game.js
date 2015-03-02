@@ -21,13 +21,14 @@ function addScore() {
 }
 
 function newDiamond() {
-    // potential issue - diamonds never killed
-    var x = Math.random() * (game.world.width - 64)
-    var diamond = diamonds.create(x, -50, 'diamond');
-    diamond.scale.set(2, 2);
-    diamond.body.gravity.y = 300;
-    diamond.body.bounce.y = 0.7 + Math.random() * 0.2;
-    currentDiamonds.push(diamond);
+    for (var i=0; i < 2; i++) {
+        var x = Math.random() * (game.world.width - 64)
+        var diamond = diamonds.create(x, -50, 'diamond');
+        diamond.scale.set(1.6, 1.6);
+        diamond.body.gravity.y = 300;
+        diamond.body.bounce.y = 0.7 + Math.random() * 0.2;
+        currentDiamonds.push(diamond);
+    }
 }
 
 function preload() {
