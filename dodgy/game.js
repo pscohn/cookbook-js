@@ -1,11 +1,5 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
-function collectStar(player, star) {
-    star.kill();
-    score += 10;
-    scoreText.text = 'Score: ' + score;
-}
-
 function playerDie(player, diamond) {
     player.kill();
     // switch screen state for game over
@@ -14,7 +8,6 @@ function playerDie(player, diamond) {
 function preload() {
     game.load.image('sky', 'assets/sky.png');
     game.load.image('ground', 'assets/platform.png');
-    game.load.image('star', 'assets/star.png');
     game.load.image('diamond', 'assets/diamond.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
 }
@@ -25,7 +18,6 @@ var score = 0;
 var scoreText;
 var gravityNormal = true;
 var jumpButton;
-var stars;
 var diamonds;
 
 function create() {
@@ -54,14 +46,6 @@ function create() {
         diamond.body.bounce.y = 0.7 + Math.random() * 0.2;
     }
 
-    stars = game.add.group();
-    stars.enableBody = true;
-    for (var i=0; i<12; i++) {
-        var star = stars.create(i * 70, 0, 'star');
-        star.body.gravity.y = 300;
-        star.body.bounce.y = 0.7 + Math.random() * 0.2;
-    }
-
     player = game.add.sprite(32, game.world.height - 150, 'dude');
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0;
@@ -84,9 +68,7 @@ flipGravity = function() {
 
 function update() {
     game.physics.arcade.collide(player, platforms);
-    game.physics.arcade.collide(stars, platforms);
     game.physics.arcade.collide(diamonds, platforms);
-    game.physics.arcade.overlap(player, stars, collectStar, null, this);
     game.physics.arcade.overlap(player, diamonds, playerDie, null, this);
     player.body.velocity.x = 0;
     if (cursors.left.isDown) {
