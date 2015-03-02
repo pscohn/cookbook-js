@@ -56,12 +56,14 @@ function create() {
 }
 
 flipGravity = function() {
-    player.body.gravity.y = -player.body.gravity.y;
     if (player.body.gravity.y > 0) {
         gravityNormal = true;
+        player.body.velocity.y = -500;
     } else {
         gravityNormal = false;
+        player.body.velocity.y = 500;
     }
+    player.body.gravity.y = -player.body.gravity.y;
 };
 
 function update() {
@@ -82,9 +84,9 @@ function update() {
 
     if (cursors.up.isDown) {// && player.body.touching.down) {
         if (gravityNormal) {
-            player.body.velocity.y = -450;
-        } else {
             player.body.velocity.y = 450;
+        } else {
+            player.body.velocity.y = -450;
         }
     }
 
