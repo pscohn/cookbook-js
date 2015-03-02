@@ -6,6 +6,11 @@ function collectStar(player, star) {
     scoreText.text = 'Score: ' + score;
 }
 
+function playerDie(player, diamond) {
+    player.kill();
+    // switch screen state for game over
+}
+
 function preload() {
     game.load.image('sky', 'assets/sky.png');
     game.load.image('ground', 'assets/platform.png');
@@ -82,6 +87,7 @@ function update() {
     game.physics.arcade.collide(stars, platforms);
     game.physics.arcade.collide(diamonds, platforms);
     game.physics.arcade.overlap(player, stars, collectStar, null, this);
+    game.physics.arcade.overlap(player, diamonds, playerDie, null, this);
     player.body.velocity.x = 0;
     if (cursors.left.isDown) {
         player.body.velocity.x = -300;
