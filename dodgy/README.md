@@ -1,6 +1,5 @@
 #todo
 
-- baddies come down at random
 - random baddie interval
 - game over screen
 - start screen / countdown

@@ -18,8 +18,9 @@ function diamondPass() {
     scoreText.text = 'score: ' + score
 }
 
-function newDiamond(x) {
+function newDiamond() {
     // potential issue - diamonds never killed
+    var x = Math.random() * (game.world.width - 64)
     var diamond = diamonds.create(x, -50, 'diamond');
     diamond.scale.set(2, 2);
     diamond.body.gravity.y = 300;
@@ -61,7 +62,7 @@ function create() {
 
     diamonds = game.add.group();
     diamonds.enableBody = true;
-    newDiamond(Math.random() * game.world.width);
+    newDiamond();
 
     player = game.add.sprite(32, game.world.height - 150, 'dude');
     game.physics.arcade.enable(player);
@@ -79,7 +80,7 @@ function update() {
 
     time++;
     if (time % 100 == 0) {
-        newDiamond(Math.random() * game.world.width);
+        newDiamond();
     }
 
     if (cursors.left.isDown) {
