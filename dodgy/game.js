@@ -1,8 +1,22 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
+var player;
+var score = 0;
+var scoreText;
+var gravityNormal = true;
+var jumpButton;
+var diamonds;
+var lastDiamond;
+
 function playerDie(player, diamond) {
     player.kill();
     // switch screen state for game over
+}
+
+function newDiamond(x, y) {
+    var diamond = diamonds.create(x, y, 'diamond');
+    diamond.body.gravity.y = 300;
+    diamond.body.bounce.y = 0.7 + Math.random() * 0.2;
 }
 
 function preload() {
@@ -11,14 +25,6 @@ function preload() {
     game.load.image('diamond', 'assets/diamond.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
 }
-
-var game;
-var player;
-var score = 0;
-var scoreText;
-var gravityNormal = true;
-var jumpButton;
-var diamonds;
 
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -41,9 +47,7 @@ function create() {
     diamonds = game.add.group();
     diamonds.enableBody = true;
     for (var i=0; i<6; i++) {
-        var diamond = diamonds.create(i * 140 + 25, 0, 'diamond');
-        diamond.body.gravity.y = 300;
-        diamond.body.bounce.y = 0.7 + Math.random() * 0.2;
+        newDiamond(i*140 + 25, 0);
     }
 
     player = game.add.sprite(32, game.world.height - 150, 'dude');
@@ -56,13 +60,14 @@ function create() {
 }
 
 flipGravity = function() {
+    var v = 500;
     player.body.gravity.y = -player.body.gravity.y;
     if (player.body.gravity.y > 0) {
         gravityNormal = true;
-        player.body.velocity.y = -500;
+        player.body.velocity.y = -v;
     } else {
         gravityNormal = false;
-        player.body.velocity.y = 500;
+        player.body.velocity.y = v;
     }
 };
 
