@@ -1,4 +1,4 @@
-var game = new Phaser.Game(320, 480, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(480, 320, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 var player;
 var playerAlive = true;
@@ -40,11 +40,6 @@ function preload() {
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0, 0, 'sky');
-    platforms = game.add.group();
-    platforms.enableBody = true;
-    var ground = platforms.create(0, game.world.height - 64, 'ground');
-    ground.scale.setTo(2, 2);
-    ground.body.immovable = true;
 
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -64,7 +59,6 @@ function create() {
 }
 
 function update() {
-    game.physics.arcade.collide(player, platforms);
     game.physics.arcade.overlap(player, diamonds, playerDie, null, this);
     player.body.velocity.x = 0;
 
