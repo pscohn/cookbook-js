@@ -2,8 +2,15 @@
 
 Game = {};
 
-var w = 480;
-var h = 320;
+Game.prototype = {
+    globals: {
+        w: 640,
+        h: 480,
+    }
+};
+
+var w = 640;
+var h = 480;
 var player;
 var playerAlive = true;
 var score = 0;
@@ -29,15 +36,16 @@ function newDiamond() {
 Game.Start = function(game) { };
 Game.Start.prototype = {
     preload: function() {
-        game.load.image('sky', 'assets/sky.png');
-        game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+        this.load.image('sky', 'assets/sky.png');
+        this.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+        this.load.image('diamond', 'assets/diamond.png');
     },
     create: function() {
         game.add.sprite(0, 0, 'sky');
         var startText = 'press up to begin';
         // text is not centered
-        var startLabel = this.game.add.text(w / 4, h / 4, startText, {fontSize: '32px', fill: '#000'});
-        var playerStart = game.add.sprite(w / 2, h / 2, 'dude');
+        var startLabel = this.game.add.text(w / 4, h / 6, startText, {fontSize: '32px', fill: '#000'});
+        var playerStart = game.add.sprite(w / 2, h / 4, 'dude');
         this.cursor = this.game.input.keyboard.createCursorKeys();
     },
     update: function() {
@@ -50,7 +58,7 @@ Game.Start.prototype = {
 Game.Play = function(game) { };
 Game.Play.prototype = {
 
-    playerDie: function(player, diamond) {
+    playerDie: function(player, obj) {
         player.kill();
         playerAlive = false;
         this.game.state.start('Over');
@@ -62,9 +70,9 @@ Game.Play.prototype = {
     },
 
     preload: function() {
-        game.load.image('sky', 'assets/sky.png');
-        game.load.image('diamond', 'assets/diamond.png');
-        game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+//        game.load.image('sky', 'assets/sky.png');
+//        game.load.image('diamond', 'assets/diamond.png');
+//        game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     },
 
     create: function() {
@@ -79,7 +87,7 @@ Game.Play.prototype = {
         diamonds.enableBody = true;
         newDiamond();
 
-        player = game.add.sprite(w / 2, h / 2, 'dude');
+        player = game.add.sprite(w / 2, h / 4, 'dude');
         game.physics.arcade.enable(player);
         player.body.bounce.y = 0;
         player.body.gravity.y = 1400;
@@ -95,6 +103,13 @@ Game.Play.prototype = {
         time++;
         if (time % 100 == 0) {
             newDiamond();
+        }
+
+        if ((player.x >= game.world.width - player.width)
+        ||  (player.x <= player.width/2)
+        ||  (player.y >= game.world.height - player.height)
+        ||  (player.y <= player.height/2)) {
+            this.playerDie(player);
         }
 
         for (var i=0; i<currentDiamonds.length; i++) {
@@ -125,17 +140,19 @@ Game.Play.prototype = {
 Game.Over = function(game) { };
 Game.Over.prototype = {
     preload: function() {
-        game.load.image('sky', 'assets/sky.png');
     },
     create: function() {
         game.add.sprite(0, 0, 'sky');
+        game.add.sprite(w / 2, h / 4, 'dude');
+        score = 0;
+        playerAlive = true;
         this.cursor = this.game.input.keyboard.createCursorKeys();
         var startText = 'press up to begin';
         // text is not centered
-        var startLabel = this.game.add.text(w / 4, h / 4, startText, {fontSize: '32px', fill: '#000'});
+        var startLabel = this.game.add.text(w / 4, h / 6, startText, {fontSize: '32px', fill: '#000'});
         var gameOverText = 'game over';
         // text is not centered
-        var gameOverLabel = this.game.add.text(w / 4, h / 6, gameOverText, {fontSize: '32px', fill: '#000'});
+        var gameOverLabel = this.game.add.text(w / 4, h / 12, gameOverText, {fontSize: '32px', fill: '#000'});
         // text is not centered
         var gameOverScoreLabel = this.game.add.text(w / 4, h - 60, scoreText.text, {fontSize: '32px', fill: '#000'});
     },
