@@ -2,11 +2,9 @@
 
 Game = {};
 
-Game.prototype = {
-    globals: {
-        w: 640,
-        h: 480,
-    }
+Game.globals = function() {
+    this.w = 640;
+    this.h = 480;
 };
 
 var w = 640;
@@ -44,9 +42,12 @@ Game.Start.prototype = {
         game.add.sprite(0, 0, 'sky');
         var startText = 'press up to begin';
         // text is not centered
-        var startLabel = this.game.add.text(w / 4, h / 6, startText, {fontSize: '32px', fill: '#000'});
+        console.log(Game.globals.w);
+        var startLabel = this.game.add.text(Game.globals.w / 4, h / 6, startText, {fontSize: '32px', fill: '#000'});
         var playerStart = game.add.sprite(w / 2, h / 4, 'dude');
         this.cursor = this.game.input.keyboard.createCursorKeys();
+
+        game.input.onDown.add(function() { this.game.state.start('Play'); }, this);
     },
     update: function() {
         if (this.cursor.up.isDown) {
@@ -57,7 +58,9 @@ Game.Start.prototype = {
 
 Game.Play = function(game) { };
 Game.Play.prototype = {
-
+    playerJump: function(player) {
+        player.body.velocity.y = -450;
+    },
     playerDie: function(player, obj) {
         player.kill();
         playerAlive = false;
@@ -94,6 +97,7 @@ Game.Play.prototype = {
         player.body.collideWorldBounds = true;
         player.animations.add('left', [0, 1, 2, 3], 10, true);
         player.animations.add('right', [5,6,7,8], 10, true);
+        game.input.onDown.add(function() { this.playerJump(player); }, this);
     },
 
     update: function() {
@@ -132,7 +136,7 @@ Game.Play.prototype = {
         }
 
         if (cursors.up.isDown) {// && player.body.touching.down) {
-            player.body.velocity.y = -450;
+            this.playerJump(player);
         }
     }
 };
