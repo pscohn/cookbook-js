@@ -47,7 +47,9 @@ Game.Start.prototype = {
         var playerStart = game.add.sprite(w / 2, h / 4, 'dude');
         this.cursor = this.game.input.keyboard.createCursorKeys();
 
-        game.input.onDown.add(function() { this.game.state.start('Play'); }, this);
+        game.input.onDown.add(function() { 
+            this.game.state.start('Play'); }
+        , this);
     },
     update: function() {
         if (this.cursor.up.isDown) {
@@ -73,9 +75,6 @@ Game.Play.prototype = {
     },
 
     preload: function() {
-//        game.load.image('sky', 'assets/sky.png');
-//        game.load.image('diamond', 'assets/diamond.png');
-//        game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     },
 
     create: function() {
@@ -97,7 +96,12 @@ Game.Play.prototype = {
         player.body.collideWorldBounds = true;
         player.animations.add('left', [0, 1, 2, 3], 10, true);
         player.animations.add('right', [5,6,7,8], 10, true);
-        game.input.onDown.add(function() { this.playerJump(player); }, this);
+        game.input.onDown.add(function(pointer) {
+            console.log(pointer);
+            if (pointer.x > game.world.width / 2) {
+                this.playerJump(player);
+            }
+        }, this);
     },
 
     update: function() {
@@ -159,6 +163,7 @@ Game.Over.prototype = {
         var gameOverLabel = this.game.add.text(w / 4, h / 12, gameOverText, {fontSize: '32px', fill: '#000'});
         // text is not centered
         var gameOverScoreLabel = this.game.add.text(w / 4, h - 60, scoreText.text, {fontSize: '32px', fill: '#000'});
+        game.input.onDown.add(function() { this.game.state.start('Play'); }, this);
     },
     update: function() {
         if (this.cursor.up.isDown) {
